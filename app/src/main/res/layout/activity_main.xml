@@ -9,8 +9,8 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.zhangjunjun.imageloader.MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!" />
+    <ImageView
+        android:id="@+id/iv_test"
+        android:layout_width="200dp"
+        android:layout_height="200dp" />
 </RelativeLayout>
