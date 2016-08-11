@@ -22,6 +22,7 @@ public class ImageLoader {
     }
 
     private void initImageCache() {
+        
         //计算可使用的最大内存
         final int maxMemory = (int) (Runtime.getRuntime().maxMemory()/1024);
         //取四分之一的可用内存作为缓存
