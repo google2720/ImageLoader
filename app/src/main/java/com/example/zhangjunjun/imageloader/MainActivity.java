@@ -5,6 +5,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
 
+import imageengine.ImageLoader;
+
 public class MainActivity extends AppCompatActivity {
 
     private android.widget.ImageView ivtest;

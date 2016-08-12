@@ -1,4 +1,4 @@
-package com.example.zhangjunjun.imageloader;
+package imageengine;
 
 import android.app.Activity;
 import android.content.Context;
@@ -40,9 +40,7 @@ public class ImageLoader {
             @Override
             public void run() {
               final Bitmap bitmap = downloadImage(url);
-
                 if(bitmap==null) {return;}
-
                 if(imageView.getTag().equals(url)) {
                     //在主线程中更新UI
                     ((Activity)context).runOnUiThread(new Runnable() {

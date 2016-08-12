@@ -1,4 +1,4 @@
-package com.example.zhangjunjun.imageloader;
+package imageengine;
 
 import android.graphics.Bitmap;
 import android.util.LruCache;
