@@ -1,8 +1,9 @@
 package com.example.zhangjunjun.imageloader;
 
+import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.util.LruCache;
 import android.widget.ImageView;
 
 import java.net.HttpURLConnection;
@@ -14,42 +15,44 @@ import java.util.concurrent.Executors;
  * Created by zhangjunjun on 2016/8/8.
  */
 public class ImageLoader {
-    LruCache<String,Bitmap> mImageCache;
+
+    ImageCache mImageCache;
     ExecutorService mExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-    public ImageLoader()
-    {
-        initImageCache();
+
+    public ImageLoader() {
+        mImageCache = new ImageCache();
     }
 
-    private void initImageCache() {
-        //哈哈
-        //计算可使用的最大内存
-        final int maxMemory = (int) (Runtime.getRuntime().maxMemory()/1024);
-        //取四分之一的可用内存作为缓存
-        final int cacheSize = maxMemory / 4;
-        mImageCache = new LruCache<String, Bitmap>(cacheSize){
-            @Override
-            protected int sizeOf(String key, Bitmap value) {
-                 //重写此方法来衡量每张图片的大小
-                return value.getRowBytes()*value.getHeight()/1024;
-            }
-        };
-    }
 
-    public void displayImage(final String url, final ImageView imageView)
+    public void displayImage(final Context context, final String url, final ImageView imageView)
     {
+
+        //从缓存中取图
+        Bitmap bitmap = mImageCache.get(url);
+        if(bitmap!=null) {
+            imageView.setImageBitmap(bitmap);
+            return ;
+        }
+
+        //如果没有,从网络中下载
         imageView.setTag(url);
         mExecutorService.submit(new Runnable() {
             @Override
             public void run() {
-              Bitmap bitmap = downloadImage(url);
-                if(bitmap==null) {
-                    return;
-                }
-                if(imageView.getTag().equals(url)) {
-                    imageView.setImageBitmap(bitmap);
-                }
+              final Bitmap bitmap = downloadImage(url);
 
+                if(bitmap==null) {return;}
+
+                if(imageView.getTag().equals(url)) {
+                    //在主线程中更新UI
+                    ((Activity)context).runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            imageView.setImageBitmap(bitmap);
+                        }
+                    });
+                }
+                mImageCache.put(url,bitmap);
             }
         });
     }
