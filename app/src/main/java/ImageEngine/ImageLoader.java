@@ -6,8 +6,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.widget.ImageView;
 
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -68,4 +70,21 @@ public class ImageLoader {
         }
         return bitmap;
     }
+
+
+    public boolean downloadUrlToStream(String imageUrl, OutputStream outputStream)
+    {
+
+        try {
+            URL url = new URL(imageUrl);
+            URLConnection urlConnection = url.openConnection();
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return  false;
+    }
+
+
 }
