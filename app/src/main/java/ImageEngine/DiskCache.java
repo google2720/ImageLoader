@@ -17,7 +17,7 @@ import imageengine.disklrucache.DiskLruCache;
 /**
  * Created by zhangjunjun on 2016/8/12.
  */
-public class DiskCache {
+public class DiskCache implements MemoryCache {
 
     private DiskLruCache mDiskLruCache=null;
 

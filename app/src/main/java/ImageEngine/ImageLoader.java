@@ -16,40 +16,35 @@ import java.util.concurrent.Executors;
  */
 public class ImageLoader {
 
-    ImageCache mImageCache;
-    DiskCache mDiskCache;
+    MemoryCache memoryCache;
+
     ExecutorService mExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
-    public ImageLoader(Context context) {
-        mImageCache = new ImageCache();
-        mDiskCache = new DiskCache(context);
+
+    public void setMemoryCache(MemoryCache memoryCache) {
+        this.memoryCache = memoryCache;
     }
+
 
 
     public void displayImage(final Context context, final String url, final ImageView imageView)
     {
 
         //从缓存中取图
-       Bitmap bitmap = mImageCache.get(url);
-        if(bitmap!=null) {
-            imageView.setImageBitmap(bitmap);
-            return ;
-        }
-
-        bitmap = mDiskCache.get(url);
+       Bitmap bitmap = memoryCache.get(url);
         if(bitmap!=null) {
             imageView.setImageBitmap(bitmap);
             return ;
         }
 
         //如果没有,从网络中下载
-        imageView.setTag(url);
+        imageView.setTag(MD5Util.getInstance().hashKeyForDisk(url));
         mExecutorService.submit(new Runnable() {
             @Override
             public void run() {
               final Bitmap bitmap = downloadImage(url);
                 if(bitmap==null) {return;}
-                if(imageView.getTag().equals(url)) {
+                if(imageView.getTag().equals(MD5Util.getInstance().hashKeyForDisk(url))) {
                     //在主线程中更新UI
                     ((Activity)context).runOnUiThread(new Runnable() {
                         @Override
@@ -58,8 +53,7 @@ public class ImageLoader {
                         }
                     });
                 }
-                mImageCache.put(url,bitmap);
-                mDiskCache.put(url,bitmap);
+                memoryCache.put(url,bitmap);
             }
         });
     }
