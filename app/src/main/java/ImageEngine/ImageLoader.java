@@ -6,10 +6,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.widget.ImageView;
 
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -19,10 +17,12 @@ import java.util.concurrent.Executors;
 public class ImageLoader {
 
     ImageCache mImageCache;
+    DiskCache mDiskCache;
     ExecutorService mExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
-    public ImageLoader() {
+    public ImageLoader(Context context) {
         mImageCache = new ImageCache();
+        mDiskCache = new DiskCache(context);
     }
 
 
@@ -30,7 +30,13 @@ public class ImageLoader {
     {
 
         //从缓存中取图
-        Bitmap bitmap = mImageCache.get(url);
+       Bitmap bitmap = mImageCache.get(url);
+        if(bitmap!=null) {
+            imageView.setImageBitmap(bitmap);
+            return ;
+        }
+
+        bitmap = mDiskCache.get(url);
         if(bitmap!=null) {
             imageView.setImageBitmap(bitmap);
             return ;
@@ -53,6 +59,7 @@ public class ImageLoader {
                     });
                 }
                 mImageCache.put(url,bitmap);
+                mDiskCache.put(url,bitmap);
             }
         });
     }
@@ -69,21 +76,6 @@ public class ImageLoader {
             e.printStackTrace();
         }
         return bitmap;
-    }
-
-
-    public boolean downloadUrlToStream(String imageUrl, OutputStream outputStream)
-    {
-
-        try {
-            URL url = new URL(imageUrl);
-            URLConnection urlConnection = url.openConnection();
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return  false;
     }
 
 

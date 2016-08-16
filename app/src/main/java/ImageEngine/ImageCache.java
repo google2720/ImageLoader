@@ -28,10 +28,12 @@ public class ImageCache {
     }
 
     public void put(String url,Bitmap bimap){
-        mImageCache.put(url,bimap);
+        String key = MD5Util.getInstance().hashKeyForDisk(url);
+        mImageCache.put(key,bimap);
     }
 
     public Bitmap get(String url) {
-        return mImageCache.get(url);
+        String key = MD5Util.getInstance().hashKeyForDisk(url);
+        return mImageCache.get(key);
     }
 }

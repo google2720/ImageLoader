@@ -4,12 +4,13 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Environment;
 
 import java.io.File;
 import java.io.IOException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import imageengine.disklrucache.DiskLruCache;
 
@@ -42,11 +43,24 @@ public class DiskCache {
             e.printStackTrace();
         }
 
+    }
 
-        String imageUrl = "http://img.my.csdn.net/uploads/201309/01/1378037235_7476.jpg";
-        String key = hashKeyForDisk(imageUrl);
+
+
+    public void put(String url, Bitmap bimap)
+    {
+        String key = MD5Util.getInstance().hashKeyForDisk(url);
         try {
             DiskLruCache.Editor editor = mDiskLruCache.edit(key);
+            if (editor != null) {
+                OutputStream outputStream = editor.newOutputStream(0);
+                if (BitMapUtil.getInstance().bitMapToStream(bimap,outputStream)) {
+                    editor.commit();
+                } else {
+                    editor.abort();
+                }
+            }
+            mDiskLruCache.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -54,18 +68,20 @@ public class DiskCache {
     }
 
 
-
-    public void put(String url, Bitmap bimap)
-    {
-
-    }
-
-
     public Bitmap get(String url)
     {
-        Bitmap bimap=null;
-
-        return  bimap;
+        try {
+            String key = MD5Util.getInstance().hashKeyForDisk(url);
+            DiskLruCache.Snapshot snapShot = mDiskLruCache.get(key);
+            if (snapShot != null) {
+                InputStream is = snapShot.getInputStream(0);
+                Bitmap bitmap = BitmapFactory.decodeStream(is);
+                return bitmap;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return  null;
     }
 
     /**
@@ -80,10 +96,10 @@ public class DiskCache {
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
                 || !Environment.isExternalStorageRemovable()) {
             //当SD卡存在或者SD卡不可被移除的时候，就调用getExternalCacheDir()方法来获取缓存路径: /sdcard/Android/data/<application package>/cache
-            cachePath = context.getExternalCacheDir().getPath();
+            cachePath = context.getApplicationContext().getExternalCacheDir().getPath();
         } else {
             //否则就调用getCacheDir()方法来获取缓存路径 :/data/data/<application package>/cache
-            cachePath = context.getCacheDir().getPath();
+            cachePath = context.getApplicationContext().getCacheDir().getPath();
         }
         return new File(cachePath + File.separator + uniqueName);
     }
@@ -104,33 +120,6 @@ public class DiskCache {
     }
 
 
-    /**
-     * 生成MD5值
-     * @param key
-     * @return
-     */
-    private String hashKeyForDisk(String key) {
-        String cacheKey;
-        try {
-            final MessageDigest mDigest = MessageDigest.getInstance("MD5");
-            mDigest.update(key.getBytes());
-            cacheKey = bytesToHexString(mDigest.digest());
-        } catch (NoSuchAlgorithmException e) {
-            cacheKey = String.valueOf(key.hashCode());
-        }
-        return cacheKey;
-    }
 
-    private String bytesToHexString(byte[] bytes) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < bytes.length; i++) {
-            String hex = Integer.toHexString(0xFF & bytes[i]);
-            if (hex.length() == 1) {
-                sb.append('0');
-            }
-            sb.append(hex);
-        }
-        return sb.toString();
-    }
 
 }

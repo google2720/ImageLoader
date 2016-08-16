@@ -17,7 +17,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         this.ivtest = (ImageView) findViewById(R.id.iv_test);
-        imageLoader = new ImageLoader();
+        imageLoader = new ImageLoader(this);
 
 
     }
@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void show(View v)
     {
-        imageLoader.displayImage(this,"http://i1.hoopchina.com.cn/blogfile/201608/09/BbsImg147072721085318_480x320.jpg",ivtest);
+        imageLoader.displayImage(this,"http://desk.fd.zol-img.com.cn/t_s720x360c5/g5/M00/08/00/ChMkJ1exsLCIULDFAAedtOIaCSsAAUdOAE_UEYAB53M287.jpg",ivtest);
     }
 
 
