@@ -26,14 +26,12 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    public void clear(View v)
-    {
+    public void clear(View v) {
         ivtest.setImageResource(R.mipmap.ic_launcher);
     }
 
-    public void show(View v)
-    {
-        imageLoader.displayImage(this,"http://desk.fd.zol-img.com.cn/t_s720x360c5/g5/M00/08/00/ChMkJ1exsLCIULDFAAedtOIaCSsAAUdOAE_UEYAB53M287.jpg",ivtest);
+    public void show(View v) {
+        imageLoader.displayImage(this,"http://www.sinaimg.cn/dy/slidenews/4_img/2012_33/704_723615_122828.jpg",ivtest);
     }
 
 

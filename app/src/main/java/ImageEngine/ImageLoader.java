@@ -54,6 +54,7 @@ public class ImageLoader {
                     });
                 }
                 memoryCache.put(url,bitmap);
+
             }
         });
     }
