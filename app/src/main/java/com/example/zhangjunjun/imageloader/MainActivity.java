@@ -26,7 +26,6 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
     public void clear(View v)
     {
         ivtest.setImageResource(R.mipmap.ic_launcher);
